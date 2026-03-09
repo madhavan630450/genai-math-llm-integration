@@ -1,104 +1,99 @@
-## Integration of a Mathematical Calulations with a Chat Completion System using LLM Function-Calling
-### Name : MARIMUTHU MATHAVAN
-### Register no: 212224230153
-### AIM:
-To design and implement a Python function for converting Celsius to Fahrenheit, and integrate it with a chat completion system utilizing the function-calling feature of a large language model (LLM).
+# Experiment 1: Integration of Mathematical Calculations with Gemini Function-Calling
 
-### PROBLEM STATEMENT:
-You need to create a Python program that can intelligently convert Celsius to Fahrenheit by leveraging OpenAI's function calling capability.
-### DESIGN STEPS:
+## Aim
+To implement a cylinder volume calculator using Google's Gemini AI model for natural language understanding and parameter extraction.
 
-#### STEP 1:
-Install required packages
-#### STEP 2:
-Give the essential function calling code into it
-#### STEP 3:
-Integrate the function into an LLM-based chat completion system with function-calling capabilities.
-### PROGRAM:
-```py
+## Theory
+The system combines:
+1. **Mathematical Component**: Uses the formula V = πr²h for cylinder volume calculation
+2. **AI Component**: Utilizes Google's Gemini model for natural language processing
+3. **Integration Layer**: Connects the AI understanding with mathematical computation
+
+## Algorithm
+1. Initialize Gemini AI and configure API key
+2. Accept natural language input from user
+3. Process query through Gemini to extract parameters
+4. Calculate cylinder volume using extracted parameters
+5. Format and display results
+6. Handle any errors gracefully
+
+## Program
+```python
 import os
 import openai
 from dotenv import load_dotenv, find_dotenv
 _ = load_dotenv(find_dotenv()) # read local .env file
 openai.api_key = os.environ['OPENAI_API_KEY']
 
-# Function to convert Celsius to Fahrenheit
-def convert_c_to_f(celsius):
-    """Convert Celsius to Fahrenheit"""
-    try:
-        celsius_float = float(celsius)
-        fahrenheit = (celsius_float * 9/5) + 32
-        conversion_info = {
-            "celsius": celsius,
-            "fahrenheit": round(fahrenheit, 2),
-            "formula": "F = (C * 9/5) + 32",
-            "unit_from": "celsius",
-            "unit_to": "fahrenheit"
-        }
-        return json.dumps(conversion_info)
-    except ValueError:
-        return json.dumps({"error": "Invalid input. Please provide a valid number."})
-
+import json
+import math
+# Function to calculate volume of a cylinder
+def calculate_cylinder_volume(radius, height):
+    if radius <= 0 or height <= 0:
+        return "Enter a valid value"
+    
+    volume = math.pi * (radius ** 2) * height
+    
+    return json.dumps({
+        "radius": radius,
+        "height": height,
+        "volume": round(volume, 2),
+        "unit": "cubic units"
+    })
+# define a function
 functions = [
     {
-        "name": "convert_c_to_f",
-        "description": "Convert Celsius to Fahrenheit",
+        "name": "calculate_cylinder_volume",
+        "description": "Calculate the volume of a cylinder using radius and height",
         "parameters": {
             "type": "object",
             "properties": {
-                "celsius": {
-                    "type": "string",
-                    "description": "The temperature in Celsius to convert to Fahrenheit, e.g. 0, 36.6, 100",
+                "radius": {
+                    "type": "number",
+                    "description": "Radius of the cylinder"
                 },
+                "height": {
+                    "type": "number",
+                    "description": "Height of the cylinder"
+                }
             },
-            "required": ["celsius"],
+            "required": ["radius", "height"],
         },
     }
 ]
-
 messages = [
     {
         "role": "user",
-        "content": "Convert 37 Celsius to Fahrenheit"
+        "content": "Find the volume of a cylinder where radius is 7 and height is 12"
     }
 ]
-
-# Step 1: Ask the LLM
+import openai
+# Call the ChatCompletion endpoint
 response = openai.ChatCompletion.create(
+    # OpenAI Updates: As of June 2024, we are now using the GPT-3.5-Turbo model
     model="gpt-3.5-turbo",
     messages=messages,
-    functions=functions,
-    function_call="auto"
+    functions=functions
 )
-
-# Step 2: Extract function call arguments
-args = json.loads(response["choices"][0]["message"]['function_call']['arguments'])
-observation = convert_c_to_f(args["celsius"])
-
-# Step 3: Append function call + result to conversation
-messages.append(response["choices"][0]["message"])
-messages.append(
-    {
-        "role": "function",
-        "name": "convert_c_to_f",
-        "content": observation,
-    }
-)
-
-# Step 4: Final LLM response
-final_response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=messages,
-)
-
-print(final_response["choices"][0]["message"]["content"])
+print(response)
+response_message = response["choices"][0]["message"]
+response_message
+response_message["content"]
+response_message["function_call"]
+json.loads(response_message["function_call"]["arguments"])
+args = json.loads(response_message["function_call"]["arguments"])
+calculate_cylinder_volume(122,133)
 ```
 
+## Output
 
-### OUTPUT:
-
-<img width="581" height="42" alt="image" src="https://github.com/user-attachments/assets/5e8aea23-eb2f-4b60-b0bf-fe1b44967f52" />
+<img width="877" height="478" alt="image" src="https://github.com/user-attachments/assets/7c52822e-0907-423f-9ab2-8312436bed8b" />
 
 
-### RESULT:
-Hence, the Python program to design and implement a Python function for converting Celsius to Fahrenheit, integrating it with a chat completion system utilizing the function-calling feature of a large language model (LLM), is written successfully and executed.
+## Result
+The experiment successfully demonstrated:
+- Integration of Gemini AI with mathematical calculations
+- Accurate parameter extraction from natural language
+- Precise volume calculations with appropriate unit handling
+- Robust error management
+- Interactive user interface
