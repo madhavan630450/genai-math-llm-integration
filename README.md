@@ -1,7 +1,7 @@
 # Experiment 1: Integration of Mathematical Calculations with Gemini Function-Calling
 
 ## Aim
-To implement a cylinder volume calculator using Google's Gemini AI model for natural language understanding and parameter extraction.
+To design and implement a Python function for calculating the volume of a cylinder, integrate it with a chat completion system utilizing the function-calling feature of a large language model (LLM).
 
 ## Theory
 The system combines:
